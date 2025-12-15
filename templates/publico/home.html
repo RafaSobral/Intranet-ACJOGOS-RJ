@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}ACJOGOS-RJ - Mapa de Jogos do Rio de Janeiro{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-dark text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4">
+                    <i class="bi bi-controller"></i> ACJOGOS-RJ
+                </h1>
+                <p class="lead">
+                    Mapa de Empresas e Profissionais de Jogos do Estado do Rio de Janeiro
+                </p>
+                <p>
+                    Conectando desenvolvedores, estúdios e profissionais da indústria de jogos fluminense.
+                </p>
+                <div class="mt-4">
+                    {% if not user.is_authenticated %}
+                    <a href="/accounts/registro/" class="btn btn-primary btn-lg me-3">
+                        <i class="bi bi-person-plus"></i> Cadastre-se
+                    </a>
+                    <a href="/accounts/login/" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Entrar
+                    </a>
+                    {% else %}
+                    <a href="/accounts/dashboard/" class="btn btn-primary btn-lg">
+                        <i class="bi bi-speedometer2"></i> Ir para Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="bi bi-joystick" style="font-size: 150px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estatísticas -->
+<div class="container my-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-building text-primary" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3">{{ total_empresas|default:0 }}</h2>
+                    <p class="text-muted">Empresas Cadastradas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-folder text-success" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3">{{ total_projetos|default:0 }}</h2>
+                    <p class="text-muted">Projetos de Jogos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-people text-warning" style="font-size: 3rem;"></i>
+                    <h2 class="mt-3">RJ</h2>
+                    <p class="text-muted">Estado do Rio de Janeiro</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Empresas em Destaque -->
+{% if empresas_destaque %}
+<div class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">
+            <i class="bi bi-building"></i> Empresas em Destaque
+        </h2>
+        <div class="row">
+            {% for empresa in empresas_destaque %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ empresa.nome_fantasia }}</h5>
+                        <p class="text-muted small">
+                            <i class="bi bi-geo-alt"></i> {{ empresa.cidade }}, {{ empresa.estado }}
+                        </p>
+                        <p class="card-text">
+                            {{ empresa.descricao|truncatewords:20|default:"Empresa de desenvolvimento de jogos" }}
+                        </p>
+                        <a href="/empresas/{{ empresa.id }}/" class="btn btn-sm btn-outline-primary">
+                            Ver Detalhes <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="/empresas/" class="btn btn-primary">
+                Ver Todas as Empresas <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Projetos em Destaque -->
+{% if projetos_destaque %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">
+        <i class="bi bi-folder"></i> Projetos em Destaque
+    </h2>
+    <div class="row">
+        {% for projeto in projetos_destaque %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                {% if projeto.imagem_capa %}
+                <img src="{{ projeto.imagem_capa.url }}" class="card-img-top" alt="{{ projeto.nome }}">
+                {% else %}
+                <div class="bg-secondary text-white text-center py-5">
+                    <i class="bi bi-controller" style="font-size: 3rem;"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ projeto.nome }}</h5>
+                    <p class="text-muted small">
+                        <i class="bi bi-building"></i> {{ projeto.empresa.nome_fantasia }}
+                    </p>
+                    <span class="badge bg-primary">{{ projeto.get_genero_display }}</span>
+                    <span class="badge bg-secondary">{{ projeto.get_status_display }}</span>
+                    <p class="card-text mt-2">
+                        {{ projeto.descricao|truncatewords:15 }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+        <a href="/projetos/" class="btn btn-primary">
+            Ver Todos os Projetos <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Call to Action -->
+<div class="bg-primary text-white py-5">
+    <div class="container text-center">
+        <h2>Faça Parte do Ecossistema de Jogos do Rio de Janeiro</h2>
+        <p class="lead">Cadastre sua empresa, projetos e conecte-se com outros profissionais.</p>
+        {% if not user.is_authenticated %}
+        <a href="/accounts/registro/" class="btn btn-light btn-lg mt-3">
+            <i class="bi bi-person-plus"></i> Cadastrar Agora
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
